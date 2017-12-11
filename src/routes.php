@@ -87,7 +87,7 @@ $app->post('/login', function (Request $request, Response $response, array $args
 			$_SESSION['role'] = $row['tablename'];
 			$_SESSION['name'] = $row['nama'];
 
-			return $response->withRedirect('/dashboard/');
+			return $response->withRedirect('/dashboard');
         } else {
         	$_SESSION['error'] = "Username atau password salah!";
         
