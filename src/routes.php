@@ -9,6 +9,24 @@ $app->get('/dashboard/[{function}]', function (Request $request, Response $respo
     if (empty($_SESSION['username'])) {
 		return $response->withRedirect('/');
     } else {
+
+    	switch ($args['function']) {
+    		case 'pinjam-barang':
+    			$sql = "SELECT * FROM siangbang.barang;";
+    			break;
+    		
+    		default:
+    			# code...
+    			break;
+    	}
+
+    	$stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        while ($row = $stmt->fetch()) {
+        	$args['query'][] = $row;
+        }
+
     	// Sample log message
 	    $this->logger->info("Siangbang '/' dashboard");
 	    
