@@ -32,13 +32,6 @@
                                     foreach ($query as $barang) {
                                         echo "<option value='".$barang['kode_barang']."'>".ucwords($barang['nama_barang'])."</option>";
                                     }
-                                    // $conn = connectDB();
-                                    // $sql = "SELECT * FROM siangbang.barang;";
-                                    // $result = pg_query($conn, $sql);
-                                    // // _d($conn);
-                                    // while ($row = pg_fetch_array($result)) {
-                                    //     echo "<option value='".$row['kode_barang']."'>".ucwords($row['nama_barang'])."</option>";
-                                    // }
                                 ?>
                             </select>
                         </div>

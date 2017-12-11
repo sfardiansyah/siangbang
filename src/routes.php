@@ -5,14 +5,19 @@ use Slim\Http\Response;
 
 // Routes
 
-$app->get('/dashboard/[{function}]', function (Request $request, Response $response, array $args) {
+$app->get('/dashboard/{function}', function (Request $request, Response $response, array $args) {
     if (empty($_SESSION['username'])) {
 		return $response->withRedirect('/');
     } else {
+    	$func = explode("/", $_SERVER['REQUEST_URI']);
 
-    	switch ($args['function']) {
+    	switch ($func[2]) {
     		case 'pinjam-barang':
     			$sql = "SELECT * FROM siangbang.barang;";
+    			break;
+    		
+    		case 'pinjam-ruang':
+    			$sql = "SELECT * FROM siangbang.ruangan;";
     			break;
     		
     		default:
@@ -22,16 +27,20 @@ $app->get('/dashboard/[{function}]', function (Request $request, Response $respo
 
     	$stmt = $this->db->prepare($sql);
         $stmt->execute();
+        $query = array();
 
         while ($row = $stmt->fetch()) {
-        	$args['query'][] = $row;
+        	array_push($query, $row);
         }
 
     	// Sample log message
 	    $this->logger->info("Siangbang '/' dashboard");
 	    
 	    // Render index view
-	    return $this->renderer->render($response, 'dashboard.phtml', $args);
+	    return $this->renderer->render($response, 'dashboard.phtml', [
+	        'function' => $args['function'],
+	    	'query' => $query
+	    ]);
     }
 });
 

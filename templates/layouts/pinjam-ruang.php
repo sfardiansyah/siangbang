@@ -29,12 +29,8 @@
                             <label>Nama Ruangan</label>
                             <select class="form-control">
                                 <?php
-                                    $conn = connectDB();
-                                    $sql = "SELECT * FROM siangbang.ruangan;";
-                                    $result = pg_query($conn, $sql);
-                                    // _d($conn);
-                                    while ($row = pg_fetch_array($result)) {
-                                        echo "<option value='".$row['no_ruangan']."'>".ucwords($row['nama_ruangan'])."</option>";
+                                    foreach ($query as $ruangan) {
+                                        echo "<option value='".$ruangan['no_ruangan']."'>".ucwords($ruangan['nama_ruangan'])."</option>";
                                     }
                                 ?>
                             </select>
