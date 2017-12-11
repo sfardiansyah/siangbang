@@ -5,6 +5,19 @@ use Slim\Http\Response;
 
 // Routes
 
+$app->get('/dashboard', function (Request $request, Response $response, array $args) {
+    if (empty($_SESSION['username'])) {
+		return $response->withRedirect('/');
+    } else {
+    	
+    	// Sample log message
+	    $this->logger->info("Siangbang '/' dashboard");
+	    
+	    // Render index view
+	    return $this->renderer->render($response, 'dashboard.phtml', $args);
+    }
+});
+
 $app->get('/dashboard/{function}', function (Request $request, Response $response, array $args) {
     if (empty($_SESSION['username'])) {
 		return $response->withRedirect('/');

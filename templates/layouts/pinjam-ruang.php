@@ -9,7 +9,7 @@
             <a href="/"><i class="fa fa-dashboard"></i> Home</a>
         </li>
         <li>
-            <a href="/dashboard/">
+            <a href="/dashboard">
                 </i> Dashboard</a>
         </li>
         <li class="active">Peminjaman Ruangan</li>
