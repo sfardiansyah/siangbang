@@ -1,7 +1,9 @@
 <?php
+$parts = parse_url(getenv("DATABASE_URL"));
+
 return [
     'settings' => [
-        'displayErrorDetails' => true, // set to false in production
+        'displayErrorDetails' => (bool)getenv('DISPLAY_ERRORS'), // set to false in production
         'addContentLengthHeader' => false, // Allow the web server to send the content-length header
 
         // Renderer settings
@@ -17,10 +19,10 @@ return [
         ],
 
         'db' => [
-            'host' => 'localhost',
-            'user' => 'postgres',
-            'pass' => 'basdat',
-            'dbname' => 'postgres',
+            'host' => $parts['host'],
+            'user' => $parts['user'],
+            'pass' => $parts['pass'],
+            'dbname' => substr($parts['path'], 1),
         ],
     ],
 ];
