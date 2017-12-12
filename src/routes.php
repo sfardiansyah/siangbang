@@ -139,7 +139,7 @@ $app->post('/insert-room', function (Request $request, Response $response, array
 
 $app->post('/insert-item', function (Request $request, Response $response, array $args) {
 	if (isset($_POST['simpan'])) {
-		print_r($_POST);
+		
 		$sql = "SELECT username_admin
 			FROM siangbang.barang
 			WHERE kode_barang = '{$_POST['kode_barang']}';";
