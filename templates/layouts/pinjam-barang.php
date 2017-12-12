@@ -30,7 +30,7 @@
                             <select class="form-control" name="kode_barang">
                                 <?php 
                                     foreach ($query as $barang) {
-                                        echo "<option value='".$barang['kode_barang']."'>".ucwords($barang['nama_barang'])."</option>";
+                                        echo "<option value='".$barang['kode_barang']."'>".ucwords($barang['nama_barang'])."</option>\n";
                                     }
                                 ?>
                             </select>

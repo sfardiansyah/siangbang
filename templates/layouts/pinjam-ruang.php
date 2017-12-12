@@ -27,7 +27,7 @@
                     <div class="box-body">
                         <div class="form-group">
                             <label>Nama Ruangan</label>
-                            <select class="form-control">
+                            <select class="form-control" name="kode_ruang">
                                 <?php
                                     foreach ($query as $ruangan) {
                                         echo "<option value='".$ruangan['no_ruangan']."'>".ucwords($ruangan['nama_ruangan'])."</option>";

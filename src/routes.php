@@ -32,6 +32,24 @@ $app->get('/dashboard/{function}', function (Request $request, Response $respons
     		case 'pinjam-ruang':
     			$sql = "SELECT * FROM siangbang.ruangan;";
     			break;
+
+            case 'riwayat-barang':
+                $sql = "SELECT *
+                    FROM siangbang.list_pinjam_barang LB, siangbang.barang B, siangbang.peminjaman_barang PB
+                    WHERE LB.username_mhs = '{$_SESSION['username']}'
+                    AND LB.username_mhs = PB.username_mhs
+                    AND B.kode_barang = LB.kode_barang
+                    AND LB.tgl_mulai = Pb.tgl_mulai
+                    ORDER BY LB.tgl_mulai DESC;";
+                break;
+            
+            case 'riwayat-ruang':
+                $sql = "SELECT *
+                    FROM siangbang.peminjaman_ruang, siangbang.ruangan
+                    WHERE username_mhs = '{$_SESSION['username']}'
+                    AND kode_ruangan = no_ruangan
+                    ORDER BY tgl_mulai DESC;";
+                break;
     		
     		default:
     			# code...
@@ -100,28 +118,28 @@ $app->post('/login', function (Request $request, Response $response, array $args
 $app->post('/insert-room', function (Request $request, Response $response, array $args) {
 	if (isset($_POST['simpan'])) {
 		
-		// $sql = "SELECT username_admin
-		// 	FROM siangbang.barang
-		// 	WHERE kode_barang = '{$_POST['kode_barang']}';";
+		$sql = "SELECT username_admin
+			FROM siangbang.ruangan
+			WHERE kode_barang = '{$_POST['kode_ruang']}';";
 
-		// $stmt = $this->db->prepare($sql);
-  //       $stmt->execute();
-  //       $item = $stmt->fetch();
+		$stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $item = $stmt->fetch();
 
-  //       $today = date("Y-m-d");
+        $today = date("Y-m-d");
 
-		// $sql = "INSERT INTO siangbang.peminjaman_barang (tgl_mulai, username_mhs, tgl_selesai, tgl_req, waktu_mulai, waktu_selesai, nama_kegiatan, tujuan, status, denda, username_admin)
-		// 	VALUES ('{$_POST['tgl_mulai']}', '{$_SESSION['username']}', '{$_POST['tgl_selesai']}', '{$today}', TIMESTAMP'{$_POST['tgl_mulai']} {$_POST['waktu_mulai']}', TIMESTAMP'{$_POST['tgl_selesai']} {$_POST['waktu_selesai']}', '{$_POST['nama_kegiatan']}', '{$_POST['tujuan']}', 0, 0, '{$item['username_admin']}');";
-  //       $stmt = $this->db->prepare($sql);
-  //       $result = $stmt->execute();
-  //       print_r($result);
-  //       return $response->withRedirect('/dashboard/pinjam-barang');
+		$sql = "INSERT INTO siangbang.peminjaman_ruang (tgl_mulai, kode_ruangan, username_mhs, tgl_selesai, tgl_req, waktu_mulai, waktu_selesai, nama_kegiatan, tujuan, jumlah_peserta, status, username_admin)
+			VALUES ('{$_POST['tgl_mulai']}', '{$_POST['kode_ruang']}', '{$_SESSION['username']}', '{$_POST['tgl_selesai']}', '{$today}', TIMESTAMP'{$_POST['tgl_mulai']} {$_POST['waktu_mulai']}', TIMESTAMP'{$_POST['tgl_selesai']} {$_POST['waktu_selesai']}', '{$_POST['nama_kegiatan']}', '{$_POST['tujuan']}', '{$_POST['jumlah']}', 1, '{$item['username_admin']}');";
+        $stmt = $this->db->prepare($sql);
+        $result = $stmt->execute();
+
+        return $response->withRedirect('/dashboard/pinjam-barang');
 	}
 });
 
 $app->post('/insert-item', function (Request $request, Response $response, array $args) {
 	if (isset($_POST['simpan'])) {
-		
+		print_r($_POST);
 		$sql = "SELECT username_admin
 			FROM siangbang.barang
 			WHERE kode_barang = '{$_POST['kode_barang']}';";
@@ -133,10 +151,15 @@ $app->post('/insert-item', function (Request $request, Response $response, array
         $today = date("Y-m-d");
 
 		$sql = "INSERT INTO siangbang.peminjaman_barang (tgl_mulai, username_mhs, tgl_selesai, tgl_req, waktu_mulai, waktu_selesai, nama_kegiatan, tujuan, status, denda, username_admin)
-			VALUES ('{$_POST['tgl_mulai']}', '{$_SESSION['username']}', '{$_POST['tgl_selesai']}', '{$today}', TIMESTAMP'{$_POST['tgl_mulai']} {$_POST['waktu_mulai']}', TIMESTAMP'{$_POST['tgl_selesai']} {$_POST['waktu_selesai']}', '{$_POST['nama_kegiatan']}', '{$_POST['tujuan']}', 0, 0, '{$item['username_admin']}');";
+			VALUES ('{$_POST['tgl_mulai']}', '{$_SESSION['username']}', '{$_POST['tgl_selesai']}', '{$today}', TIMESTAMP'{$_POST['tgl_mulai']} {$_POST['waktu_mulai']}', TIMESTAMP'{$_POST['tgl_selesai']} {$_POST['waktu_selesai']}', '{$_POST['nama_kegiatan']}', '{$_POST['tujuan']}', 1, 0, '{$item['username_admin']}');";
         $stmt = $this->db->prepare($sql);
         $result = $stmt->execute();
-        print_r($result);
+
+        $sql = "INSERT INTO siangbang.list_pinjam_barang (tgl_mulai, username_mhs, kode_barang, jumlah)
+            VALUES ('{$_POST['tgl_mulai']}', '{$_SESSION['username']}', '{$_POST['kode_barang']}', '{$_POST['jumlah']}');";
+        $stmt = $this->db->prepare($sql);
+        $result = $stmt->execute();
+
         return $response->withRedirect('/dashboard/pinjam-barang');
 	}
 });
