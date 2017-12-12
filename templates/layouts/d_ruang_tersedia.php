@@ -25,6 +25,10 @@
 		$_SESSION['month'] = $_POST['month'];
 	}
 
+	if(!isset($_POST['month'])){
+		$_SESSION['month'] = "Januari";
+	}
+
 ?>
 
 <!DOCTYPE html>

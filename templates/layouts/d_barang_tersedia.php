@@ -26,6 +26,12 @@
 		$_SESSION['month'] = $_POST['month'];
 	}
 
+	if(!isset($_POST['month'])){
+		$_SESSION['month'] = "Januari";
+	}
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -336,7 +342,7 @@
 					echo "<td>",$row['jenis_barang'],"</td>";
 					echo "<td>",$row['jumlah_barang'],"</td>";
 					echo "<td>",substr($row['keterangan'],0,100),"</td>";
-					echo "<td>",$row['foto'],"</td>";
+					echo "<td><image src='",$row['foto'],"'></td>";
 					echo "</tr>";
 					$i++;
 				}
