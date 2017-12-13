@@ -328,7 +328,7 @@
 							$count++;
 							$day++;
 							$startday++;
-							echo "<td>",$day;
+							echo "<td><b>",$day,"</b>";
 
 							$date = "$year-$nMonth-$day";
 							$sql = "SELECT distinct no_ruangan,nama_ruangan from siangbang.ruangan r, siangbang.peminjaman_ruang pr 
