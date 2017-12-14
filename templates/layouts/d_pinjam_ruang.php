@@ -21,6 +21,10 @@
 		return $conn;
 	}
 
+	if(!isset($_SESSION['command'])){
+		$_SESSION['command']='';
+	}
+
 	if($_SERVER['REQUEST_METHOD'] === 'POST'){
 		if($_POST['command'] === 'accept') {
 			acceptRequest($_POST['tgl_mulai'],$_POST['kode_ruangan'],$_POST['username_mhs']);
