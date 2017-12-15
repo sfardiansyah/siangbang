@@ -103,8 +103,29 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
+                    <?php if ($_SESSION['role'] == 'admin_ruangan' || $_SESSION['role'] == 'mahasiswa') : ?>
+                    <li class="treeview <?php if ($function == 'daftar-ruang' || $function == 'list-pinjam-ruang') echo "active";?>">
+                        <a href="#">
+                            <i class="fa fa-building"></i>
+                            <span>Ruangan</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li <?php if ($function == 'daftar-ruang') echo "class='active'";?>>
+                                <a href="<?php if (empty($function)) echo "dashboard/" ?>daftar-ruang"><i class="fa fa-circle-o"></i> Ruangan Tersedia</a>
+                            </li>
+                            <?php if ($_SESSION['role'] == 'admin_ruangan') : ?>
+                            <li <?php if ($function == 'list-pinjam-ruang') echo "class='active'";?>>
+                                <a href="<?php if (empty($function)) echo "dashboard/" ?>list-pinjam-ruang"><i class="fa fa-circle-o"></i> Daftar Peminjaman Ruangan</a>
+                            </li>
+                            <?php endif; ?>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
                     <?php if ($_SESSION['role'] == 'admin_barang' || $_SESSION['role'] == 'mahasiswa') : ?>
-                    <li class="treeview">
+                    <li class="treeview <?php if ($function == 'daftar-barang') echo "active";?>">
                         <a href="#">
                             <i class="fa fa-laptop"></i>
                             <span>Barang</span>
@@ -113,7 +134,7 @@
                             </span>
                         </a>
                         <ul class="treeview-menu">
-                            <li>
+                            <li <?php if ($function == 'daftar-barang') echo "class='active'";?>>
                                 <a href="<?php if (empty($function)) echo "dashboard/" ?>daftar-barang"><i class="fa fa-circle-o"></i> Barang Tersedia</a>
                             </li>
                         </ul>
@@ -130,10 +151,10 @@
                         </a>
                         <ul class="treeview-menu">
                             <li <?php if ($function == 'pinjam-barang') echo "class='active'";?>>
-                                <a href="<?php if (empty($function)) echo "dashboard/" ?>pinjam-barang"><i class="fa fa-circle-o"></i> Peminjaman Barang</a>
+                                <a href="<?php if (empty($function)) echo "dashboard/" ?>pinjam-barang"><i class="fa fa-circle-o"></i> Pinjam Barang</a>
                             </li>
                             <li <?php if ($function == 'pinjam-ruang') echo "class='active'";?>>
-                                <a href="<?php if (empty($function)) echo "dashboard/" ?>pinjam-ruang"><i class="fa fa-circle-o"></i> Peminjaman Ruangan</a>
+                                <a href="<?php if (empty($function)) echo "dashboard/" ?>pinjam-ruang"><i class="fa fa-circle-o"></i> Pinjam Ruangan</a>
                             </li>
                         </ul>
                     </li>
@@ -170,12 +191,28 @@
                         require_once(__DIR__.'/layouts/daftar-barang.php');
                         break;
 
+                    case 'daftar-ruang':
+                        require_once(__DIR__.'/layouts/daftar-ruang.php');
+                        break;
+
+                    case 'daftar-barang':
+                        require_once(__DIR__.'/layouts/daftar-barang.php');
+                        break;
+
                     case 'pinjam-barang':
                         require_once(__DIR__.'/layouts/pinjam-barang.php');
                         break;
 
                     case 'pinjam-ruang':
                         require_once(__DIR__.'/layouts/pinjam-ruang.php');
+                        break;
+
+                    case 'list-pinjam-barang':
+                        require_once(__DIR__.'/layouts/list-pinjam-barang.php');
+                        break;
+
+                    case 'list-pinjam-ruang':
+                        require_once(__DIR__.'/layouts/list-pinjam-ruang.php');
                         break;
 
                     case 'riwayat-barang':
@@ -221,15 +258,55 @@
     <!-- AdminLTE App -->
     <script src="/js/adminlte.min.js"></script>
     <script type="text/javascript">
-      $('.datepicker').datepicker({
-        orientation: 'bottom',
-        format: 'yyyy-mm-dd'
-      });
+        $('.datepicker').datepicker({
+            orientation: 'bottom',
+            format: 'yyyy-mm-dd'
+        });
 
-      //Timepicker
-      $('.timepicker').timepicker({
-        showInputs: false
-      })
+        //Timepicker
+        $('.timepicker').timepicker({
+            showInputs: false
+        })
+
+        $(".date-selector").change(function(){
+            var monthVal = $("#month-select").val();
+            if (monthVal < 10) {
+                monthVal = 0+monthVal;
+            }
+            var yearVal = $("#year-select").val();
+            
+            $.post('/change-date', { month: monthVal, year: yearVal, page: "<?php echo $function ?>" }, 
+                function(returnedData){
+                    console.log(returnedData);
+                    $('#table-result').html(returnedData);
+            });
+        });
+
+        $.ajaxSetup({
+          cache: false
+        });
+        
+        $(".accept-button").click(function () {
+            var username_mhs = $(this).attr('username');
+            var tgl = $(this).attr('tgl_mulai');
+            var no_ruangan = $(this).attr('ruangan');
+
+            $.post('/accept-ruang', { username: username_mhs, tgl_mulai: tgl, ruangan: no_ruangan }, 
+                function(returnedData){
+                    location.reload();
+            });
+        });
+
+        $(".deny-button").click(function () {
+            var username_mhs = $(this).attr('username');
+            var tgl = $(this).attr('tgl_mulai');
+            var no_ruangan = $(this).attr('ruangan');
+            
+            $.post('/deny-ruang', { username: username_mhs, tgl_mulai: tgl, ruangan: no_ruangan }, 
+                function(returnedData){
+                    location.reload();
+            });
+        });
     </script>
 </body>
 

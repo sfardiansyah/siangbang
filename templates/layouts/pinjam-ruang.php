@@ -1,7 +1,7 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Peminjaman Ruangan
+        Pinjam Ruangan
         <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
@@ -12,7 +12,7 @@
             <a href="/dashboard">
                 </i> Dashboard</a>
         </li>
-        <li class="active">Peminjaman Ruangan</li>
+        <li class="active">Pinjam Ruangan</li>
     </ol>
 </section>
 <!-- Main content -->

@@ -5031,6 +5031,11 @@ table.text-center th {
  * General: Miscellaneous
  * ----------------------
  */
+.date-selector {
+  width: 150px;
+  display: inline;
+}
+
 .pad {
   padding: 10px;
 }
