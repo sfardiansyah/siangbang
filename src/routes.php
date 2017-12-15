@@ -55,7 +55,7 @@ $app->post('/change-date', function (Request $request, Response $response, array
                                 SELECT R.no_ruangan from siangbang.ruangan R, siangbang.peminjaman_ruang PR 
                                 where R.no_ruangan = PR.kode_ruangan
                                 AND PR.status != 7
-                                AND (tgl_mulai,tgl_selesai) OVERLAPS ('$date'::DATE, '$date'::DATE)
+                                AND (PR.tgl_mulai, PR.tgl_selesai) OVERLAPS ('$date'::DATE, '$date'::DATE)
                             ) ORDER BY no_ruangan ASC;";
 
                         $stmt = $this->db->prepare($sql);
@@ -412,53 +412,158 @@ $app->post('/print-barang', function (Request $request, Response $response, arra
 
     $item = $stmt->fetch();
 
+    switch ($item['status']) {
+        case "1": 
+        $item['status'] = "Menunggu persetujuan admin";
+        break;
+        case "2": 
+        $item['status'] = "Menunggu persetujuan manajer pendidikan dan kemahasiswaan";
+        break;
+        case "3": 
+        $item['status'] = "Menunggu persetujuan manajer IT";
+        break;
+        case "4": 
+        $item['status'] = "Disetujui";
+        break;
+        case "5": 
+        $item['status'] = "Ditolak admin";
+        break;
+        case "6": 
+        $item['status'] = "Ditolak manajer pendidikan dan kemahasiswaan";
+        break;
+        case "7": 
+        $item['status'] = "Ditolak manajer IT";
+        break;
+    }
+
     $this->pdf->AddPage();
     $this->pdf->SetFont('Arial','B',16);
-
+    $this->pdf->Cell(180,20,"Bukti Peminjaman Barang",0,0,'C',false);
+    $this->pdf->Ln();
     // Colors, line width and bold font
-    $this->pdf->SetFillColor(54, 127, 169);
-    $this->pdf->SetTextColor(255);
-    $this->pdf->SetDrawColor(128,0,0);
-    $this->pdf->SetLineWidth(.3);
-    $this->pdf->SetFont('','B');
     // Header
-    $w = array(40, 35, 40, 45);
-    $header = array('Tanggal Request', 'Username Mahasiswa', 'Kode Barang', 'Nama Barang');
-    for($i=0;$i<count($header);$i++)
-        $this->pdf->Cell($w[$i],7,$header[$i],1,0,'C',true);
-    $this->pdf->Ln();
-    // Color and font restoration
-    $this->pdf->SetFillColor(224,235,255);
-    $this->pdf->SetTextColor(0);
-    $this->pdf->SetFont('');
-    // Data
-    $fill = false;
-    
-    $this->pdf->Cell($w[0],6,$item['tgl_mulai'],'LR',0,'L',$fill);
-    $this->pdf->Cell($w[1],6,$item['username_mhs'],'LR',0,'L',$fill);
-    $this->pdf->Cell($w[2],6,$item['kode_barang'],'LR',0,'L',$fill);
-    $this->pdf->Cell($w[3],6,$item['nama_barang'],'LR',0,'L',$fill);
-    $this->pdf->Ln();
-    $fill = !$fill;
+    $w = array(35, 45, 30, 35, 50, 50);
+    $header = array('Tanggal Request', 'Username Mahasiswa', 'Kode Barang', 'Nama Barang', "Tgl. Mulai Penggunaan", "Tgl. Selesai Penggunaan", 'Waktu Mulai', 'Waktu Selesai', 'Nama Kegiatan', 'Tujuan', 'Jumlah', 'Status', 'Denda');
+    $content = array(': '.$item['tgl_req'], ': '.$item['username_mhs'], ': '.$item['kode_barang'], ': '.$item['nama_barang'], ': '.$item['tgl_mulai'], ': '.$item['tgl_selesai'], ': '.$item['waktu_mulai'], ': '.$item['waktu_selesai'], ': '.ucwords($item['nama_kegiatan']), ': '.$item['tujuan'], ': '.$item['jumlah'], ': '.$item['status'], ': Rp '.$item['denda']);
 
-    // Closing line
-    $this->pdf->Cell(array_sum($w),0,'','T');
+    for($i=0;$i<count($header);$i++) {
+        if ($header[$i] == 'Nama Kegiatan' || $header[$i] == 'Tujuan' || strlen($item['status']) > 35) {
+            $this->pdf->SetFont('Arial','B',16);
+            $this->pdf->Cell(90,8,$header[$i],0,0,'L',false);
+            $this->pdf->SetFont('', '',16);
+            $this->pdf->MultiCell(90,10,$content[$i]);
+            $this->pdf->Ln();
+        } else {
+            $this->pdf->SetFont('Arial','B',16);
+            $this->pdf->Cell(90,8,$header[$i],0,0,'L',false);
+            $this->pdf->SetFont('', '',16);
+            $this->pdf->Cell(90,8,$content[$i],0,0,'L',false);
+            $this->pdf->Ln();
+        }
+    }
+
+    $this->pdf->Ln();
 
     $name = "BUKTI_".str_replace("-", "", $item['tgl_mulai'])."-".$item['username_mhs'].".pdf";
 
-    return $this->pdf->Output('D', $name);
+    $this->pdf->Output('D', $name);
 });
 
-$app->get('/cetak', function (Request $request, Response $response, array $args) {
-    // Sample log message
-    $this->logger->info("Slim-Skeleton '/' cetak");
+$app->post('/print-ruang', function (Request $request, Response $response, array $args) {
+    $sql = "SELECT *
+        FROM siangbang.peminjaman_ruang, siangbang.ruangan
+        WHERE username_mhs = '{$_SESSION['username']}'
+        AND kode_ruangan = no_ruangan
+        AND tgl_mulai = '{$_POST['tgl_mulai']}'
+        AND kode_ruangan = '{$_POST['ruangan']}'
+        ORDER BY tgl_mulai DESC;";
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute();
+
+    $item = $stmt->fetch();
+
+    switch ($item['status']) {
+        case "1": 
+        $item['status'] = "Menunggu persetujuan admin";
+        break;
+        case "2": 
+        $item['status'] = "Menunggu persetujuan manajer pendidikan dan kemahasiswaan";
+        break;
+        case "3": 
+        $item['status'] = "Menunggu persetujuan manajer IT";
+        break;
+        case "4": 
+        $item['status'] = "Disetujui";
+        break;
+        case "5": 
+        $item['status'] = "Ditolak admin";
+        break;
+        case "6": 
+        $item['status'] = "Ditolak manajer pendidikan dan kemahasiswaan";
+        break;
+        case "7": 
+        $item['status'] = "Ditolak manajer IT";
+        break;
+    }
 
     $this->pdf->AddPage();
     $this->pdf->SetFont('Arial','B',16);
-    $this->pdf->Cell(40,10,'Hello World!');
+    $this->pdf->Cell(180,20,"Bukti Peminjaman Ruangan",0,0,'C',false);
+    $this->pdf->Ln();
+    // Colors, line width and bold font
+    // Header
+    $w = array(35, 45, 30, 35, 50, 50);
+    
+    $header = array(
+        'Tanggal Request', 
+        'Kode Ruangan', 
+        'Username Mahasiswa',
+        "Tgl. Mulai Penggunaan", 
+        "Tgl. Selesai Penggunaan", 
+        'Waktu Mulai', 
+        'Waktu Selesai', 
+        'Nama Kegiatan', 
+        'Tujuan', 
+        'Jumlah Peserta', 
+        'Status'
+    );
 
-    // Render index view
-    return $this->pdf->Output('D');
+    $content = array(
+        ': '.$item['tgl_req'], 
+        ': '.$item['kode_ruangan'], 
+        ': '.$item['username_mhs'],  
+        ': '.$item['tgl_mulai'], 
+        ': '.$item['tgl_selesai'], 
+        ': '.$item['waktu_mulai'], 
+        ': '.$item['waktu_selesai'], 
+        ': '.ucwords($item['nama_kegiatan']), 
+        ': '.$item['tujuan'], 
+        ': '.$item['jumlah_peserta'], 
+        ': '.$item['status']
+    );
+
+    for($i=0;$i<count($header);$i++) {
+        if ($header[$i] == 'Tujuan' || strlen($item['status']) > 35) {
+            $this->pdf->SetFont('Arial','B',16);
+            $this->pdf->Cell(90,8,$header[$i],0,0,'L',false);
+            $this->pdf->SetFont('', '',16);
+            $this->pdf->MultiCell(90,10,$content[$i]);
+            $this->pdf->Ln();
+        } else {
+            $this->pdf->SetFont('Arial','B',16);
+            $this->pdf->Cell(90,8,$header[$i],0,0,'L',false);
+            $this->pdf->SetFont('', '',16);
+            $this->pdf->Cell(90,8,$content[$i],0,0,'L',false);
+            $this->pdf->Ln();
+        }
+    }
+
+    $this->pdf->Ln();
+
+    $name = "BUKTI_".str_replace("-", "", $item['tgl_mulai'])."-".$item['username_mhs'].".pdf";
+
+    $this->pdf->Output('D', $name);
 });
 
 $app->get('/', function (Request $request, Response $response, array $args) {

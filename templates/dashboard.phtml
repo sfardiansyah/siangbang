@@ -336,14 +336,7 @@
         });
 
         $(".print-item-button").click(function () {
-            var username_mhs = $(this).attr('username');
-            var tgl = $(this).attr('tgl_mulai');
-            var no_ruangan = $(this).attr('barang');
-            
-            $.post('/print-barang', { username: username_mhs, tgl_mulai: tgl, barang: no_ruangan }, 
-                function(returnedData){
-                    $.fileDownload(returnedData);
-            });
+            location.reload();
         });
     </script>
 </body>

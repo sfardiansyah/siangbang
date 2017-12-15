@@ -34,7 +34,24 @@
                             </tr>
                             <?php
                                 foreach ($query as $key => $value) {
-                                    echo "<tr>\n<td><a href='#' data-toggle='modal' data-target='#modal-".$key."'>".str_replace("-", "", $value['tgl_mulai'])."-".$value['username_mhs']."</a></td>\n<td>".$value['nama_barang']."</td>\n<td><button type='button' class='btn btn-block btn-primary btn-sm print-item-button' username='".$value['username_mhs']."' tgl_mulai='".$value['tgl_mulai']."' barang='".$value['kode_barang']."'>Cetak Bukti</button></td>\n</tr>\n";
+                                    echo "<tr>\n
+                                            <td>
+                                                <a href='#' data-toggle='modal' data-target='#modal-".$key."'>
+                                                    ".str_replace("-", "", $value['tgl_mulai'])."-".$value['username_mhs']."
+                                                </a>
+                                            </td>\n
+                                            <td>".$value['nama_barang']."</td>\n
+                                            <td>
+                                                <form role='form' action='/print-barang' method='POST'>
+                                                <input type='hidden' name='username' value='".$value['username_mhs']."'>
+                                                <input type='hidden' name='tgl_mulai' value='".$value['tgl_mulai']."'>
+                                                <input type='hidden' name='barang' value='".$value['kode_barang']."'>
+                                                <button type='submit' class='btn btn-block btn-primary btn-sm print-item-button'>
+                                                    Cetak Bukti
+                                                </button>
+                                                </form>
+                                            </td>\n
+                                        </tr>\n";
                                 }
                             ?>
                         </tbody>

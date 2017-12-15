@@ -82,6 +82,8 @@
                                             $out .= "<b>".($j-$start_week+1)."</b><br>";
 
                                             $date = date('Y')."-".date('m')."-".($j-$start_week+1);
+                                            // $date = date('Y-m-d', strtotime($_POST['year'].'-'.$_POST['month'].'-'.($j-$start_week+1)));
+                                            // $out .= $date;
 
                                             $sql = "SELECT DISTINCT R.no_ruangan, R.nama_ruangan 
                                                 FROM siangbang.ruangan R, siangbang.peminjaman_ruang PR 
@@ -90,7 +92,7 @@
                                                     SELECT R.no_ruangan from siangbang.ruangan R, siangbang.peminjaman_ruang PR 
                                                     where R.no_ruangan = PR.kode_ruangan
                                                     AND PR.status != 7
-                                                    AND (tgl_mulai,tgl_selesai) OVERLAPS ('$date'::DATE, '$date'::DATE)
+                                                    AND (PR.tgl_mulai,PR.tgl_selesai) OVERLAPS ('$date'::DATE, '$date'::DATE)
                                                 ) ORDER BY no_ruangan ASC;";
 
                                             $stmt = $db->prepare($sql);
