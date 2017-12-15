@@ -82,7 +82,6 @@
                                             $out .= "<b>".($j-$start_week+1)."</b><br>";
 
                                             $date = date('Y')."-".date('m')."-".($j-$start_week+1);
-                                            $today = date("Y-m-d", strtotime($date));
 
                                             $sql = "SELECT DISTINCT R.no_ruangan, R.nama_ruangan 
                                                 FROM siangbang.ruangan R, siangbang.peminjaman_ruang PR 
@@ -91,7 +90,7 @@
                                                     SELECT R.no_ruangan from siangbang.ruangan R, siangbang.peminjaman_ruang PR 
                                                     where R.no_ruangan = PR.kode_ruangan
                                                     AND PR.status != 7
-                                                    AND (tgl_mulai,tgl_selesai) OVERLAPS (DATE '{$today}', DATE '{$today}')
+                                                    AND (tgl_mulai,tgl_selesai) OVERLAPS ('$date'::DATE, '$date'::DATE)
                                                 ) ORDER BY no_ruangan ASC;";
 
                                             $stmt = $db->prepare($sql);

@@ -178,6 +178,25 @@
                         </ul>
                     </li>
                     <?php endif; ?>
+                    <?php if ($_SESSION['role'] == 'mahasiswa') : ?>
+                    <li class="treeview <?php if ($function == 'cetak-barang' || $function == 'cetak-ruang') echo "active";?>">
+                        <a href="#">
+                            <i class="fa fa-print"></i>
+                            <span>Cetak Bukti</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li <?php if ($function == 'cetak-barang') echo "class='active'";?>>
+                                <a href="<?php if (empty($function)) echo "dashboard/" ?>cetak-barang"><i class="fa fa-circle-o"></i> Bukti Peminjaman Barang</a>
+                            </li>
+                            <li <?php if ($function == 'cetak-ruang') echo "class='active'";?>>
+                                <a href="<?php if (empty($function)) echo "dashboard/" ?>cetak-ruang"><i class="fa fa-circle-o"></i> Bukti Peminjaman Ruangan</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
                 </ul>
             </section>
             <!-- /.sidebar -->
@@ -221,6 +240,14 @@
 
                     case 'riwayat-ruang':
                         require_once(__DIR__.'/layouts/riwayat-ruang.php');
+                        break;
+
+                    case 'cetak-barang':
+                        require_once(__DIR__.'/layouts/cetak-barang.php');
+                        break;
+
+                    case 'cetak-ruang':
+                        require_once(__DIR__.'/layouts/cetak-ruang.php');
                         break;
                   
                     default:
@@ -285,7 +312,7 @@
         $.ajaxSetup({
           cache: false
         });
-        
+
         $(".accept-button").click(function () {
             var username_mhs = $(this).attr('username');
             var tgl = $(this).attr('tgl_mulai');
@@ -305,6 +332,17 @@
             $.post('/deny-ruang', { username: username_mhs, tgl_mulai: tgl, ruangan: no_ruangan }, 
                 function(returnedData){
                     location.reload();
+            });
+        });
+
+        $(".print-item-button").click(function () {
+            var username_mhs = $(this).attr('username');
+            var tgl = $(this).attr('tgl_mulai');
+            var no_ruangan = $(this).attr('barang');
+            
+            $.post('/print-barang', { username: username_mhs, tgl_mulai: tgl, barang: no_ruangan }, 
+                function(returnedData){
+                    $.fileDownload(returnedData);
             });
         });
     </script>

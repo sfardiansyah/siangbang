@@ -47,7 +47,6 @@ $app->post('/change-date', function (Request $request, Response $response, array
                         $out .= "<b>".($j-$start_week+1)."</b><br>";
 
                         $date = date('Y')."-".date('m')."-".($j-$start_week+1);
-                        $today = date("Y-m-d", strtotime($date));
 
                         $sql = "SELECT DISTINCT R.no_ruangan, R.nama_ruangan 
                             FROM siangbang.ruangan R, siangbang.peminjaman_ruang PR 
@@ -56,7 +55,7 @@ $app->post('/change-date', function (Request $request, Response $response, array
                                 SELECT R.no_ruangan from siangbang.ruangan R, siangbang.peminjaman_ruang PR 
                                 where R.no_ruangan = PR.kode_ruangan
                                 AND PR.status != 7
-                                AND (tgl_mulai,tgl_selesai) OVERLAPS (DATE '{$today}', DATE '{$today}')
+                                AND (tgl_mulai,tgl_selesai) OVERLAPS ('$date'::DATE, '$date'::DATE)
                             ) ORDER BY no_ruangan ASC;";
 
                         $stmt = $this->db->prepare($sql);
@@ -229,6 +228,24 @@ $app->get('/dashboard/{function}', function (Request $request, Response $respons
                     AND kode_ruangan = no_ruangan
                     ORDER BY tgl_mulai DESC;";
                 break;
+
+            case 'cetak-barang':
+                $sql = "SELECT *
+                    FROM siangbang.list_pinjam_barang LB, siangbang.barang B, siangbang.peminjaman_barang PB
+                    WHERE LB.username_mhs = '{$_SESSION['username']}'
+                    AND LB.username_mhs = PB.username_mhs
+                    AND B.kode_barang = LB.kode_barang
+                    AND LB.tgl_mulai = Pb.tgl_mulai
+                    ORDER BY LB.tgl_mulai DESC;";
+                break;
+            
+            case 'cetak-ruang':
+                $sql = "SELECT *
+                    FROM siangbang.peminjaman_ruang, siangbang.ruangan
+                    WHERE username_mhs = '{$_SESSION['username']}'
+                    AND kode_ruangan = no_ruangan
+                    ORDER BY tgl_mulai DESC;";
+                break;
             
             default:
                 # code...
@@ -378,6 +395,70 @@ $app->post('/deny-ruang', function (Request $request, Response $response, array 
     $stmt->execute();
 
     return true;
+});
+
+$app->post('/print-barang', function (Request $request, Response $response, array $args) {
+    $sql = "SELECT *
+        FROM siangbang.list_pinjam_barang LB, siangbang.barang B, siangbang.peminjaman_barang PB
+        WHERE LB.username_mhs = '{$_SESSION['username']}'
+        AND LB.tgl_mulai = '{$_POST['tgl_mulai']}'
+        AND LB.kode_barang = '{$_POST['barang']}'
+        AND LB.username_mhs = PB.username_mhs
+        AND B.kode_barang = LB.kode_barang
+        AND LB.tgl_mulai = Pb.tgl_mulai
+        ORDER BY LB.tgl_mulai DESC;";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute();
+
+    $item = $stmt->fetch();
+
+    $this->pdf->AddPage();
+    $this->pdf->SetFont('Arial','B',16);
+
+    // Colors, line width and bold font
+    $this->pdf->SetFillColor(54, 127, 169);
+    $this->pdf->SetTextColor(255);
+    $this->pdf->SetDrawColor(128,0,0);
+    $this->pdf->SetLineWidth(.3);
+    $this->pdf->SetFont('','B');
+    // Header
+    $w = array(40, 35, 40, 45);
+    $header = array('Tanggal Request', 'Username Mahasiswa', 'Kode Barang', 'Nama Barang');
+    for($i=0;$i<count($header);$i++)
+        $this->pdf->Cell($w[$i],7,$header[$i],1,0,'C',true);
+    $this->pdf->Ln();
+    // Color and font restoration
+    $this->pdf->SetFillColor(224,235,255);
+    $this->pdf->SetTextColor(0);
+    $this->pdf->SetFont('');
+    // Data
+    $fill = false;
+    
+    $this->pdf->Cell($w[0],6,$item['tgl_mulai'],'LR',0,'L',$fill);
+    $this->pdf->Cell($w[1],6,$item['username_mhs'],'LR',0,'L',$fill);
+    $this->pdf->Cell($w[2],6,$item['kode_barang'],'LR',0,'L',$fill);
+    $this->pdf->Cell($w[3],6,$item['nama_barang'],'LR',0,'L',$fill);
+    $this->pdf->Ln();
+    $fill = !$fill;
+
+    // Closing line
+    $this->pdf->Cell(array_sum($w),0,'','T');
+
+    $name = "BUKTI_".str_replace("-", "", $item['tgl_mulai'])."-".$item['username_mhs'].".pdf";
+
+    return $this->pdf->Output('D', $name);
+});
+
+$app->get('/cetak', function (Request $request, Response $response, array $args) {
+    // Sample log message
+    $this->logger->info("Slim-Skeleton '/' cetak");
+
+    $this->pdf->AddPage();
+    $this->pdf->SetFont('Arial','B',16);
+    $this->pdf->Cell(40,10,'Hello World!');
+
+    // Render index view
+    return $this->pdf->Output('D');
 });
 
 $app->get('/', function (Request $request, Response $response, array $args) {
