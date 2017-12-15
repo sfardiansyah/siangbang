@@ -104,7 +104,7 @@
                         </a>
                     </li>
                     <?php if ($_SESSION['role'] == 'admin_ruangan' || $_SESSION['role'] == 'mahasiswa') : ?>
-                    <li class="treeview <?php if ($function == 'daftar-ruang' || $function == 'list-pinjam-ruang') echo "active";?>">
+                    <li class="treeview <?php if ($function == 'daftar-ruang' || $function == 'list-pinjam-ruang' || $function == 'entry-jadwal') echo "active";?>">
                         <a href="#">
                             <i class="fa fa-building"></i>
                             <span>Ruangan</span>
@@ -120,7 +120,13 @@
                             <li <?php if ($function == 'list-pinjam-ruang') echo "class='active'";?>>
                                 <a href="<?php if (empty($function)) echo "dashboard/" ?>list-pinjam-ruang"><i class="fa fa-circle-o"></i> Daftar Peminjaman Ruangan</a>
                             </li>
+                            <li <?php if ($function == 'entry-jadwal') echo "class='active'";?>>
+                                <a href="<?php if (empty($function)) echo "dashboard/" ?>entry-jadwal"><i class="fa fa-circle-o"></i> Entry Jadwal Ruangan</a>
+                            </li>
                             <?php endif; ?>
+                            <li>
+                                <a href="/jadwal-ruangan"><i class="fa fa-circle-o"></i> Lihat Jadwal</a>
+                            </li>
                         </ul>
                     </li>
                     <?php endif; ?>
@@ -248,6 +254,10 @@
 
                     case 'cetak-ruang':
                         require_once(__DIR__.'/layouts/cetak-ruang.php');
+                        break;
+
+                    case 'entry-jadwal':
+                        require_once(__DIR__.'/layouts/entry-jadwal.php');
                         break;
                   
                     default:

@@ -1,7 +1,7 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Pinjam Ruangan
+        Entry Jadwal Ruangan
         <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
@@ -12,7 +12,7 @@
             <a href="/dashboard">
                 </i> Dashboard</a>
         </li>
-        <li class="active">Pinjam Ruangan</li>
+        <li class="active">Entry Jadwal Ruangan</li>
     </ol>
 </section>
 <!-- Main content -->
@@ -21,37 +21,40 @@
         <div class="col-md-6 col-md-offset-3">
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Form Peminjaman Ruangan</h3>
+                    <h3 class="box-title">Form Entry Jadwal Ruangan</h3>
                 </div>
-                <form role="form" method="post" action="/insert-room">
+                <form role="form" method="post" action="/insert-schedule">
                     <div class="box-body">
                         <div class="form-group">
-                            <label>Nama Ruangan</label>
-                            <select class="form-control" name="kode_ruang">
+                            <label for="kode_jadwal">Kode Jadwal</label>
+                            <input name="kode_jadwal" type="text" class="form-control" id="kode_jadwal" placeholder="Masukkan Kode Jadwal">
+                        </div>
+                        <div class="form-group">
+                            <label>Tahun/Semester</label>
+                            <select class="form-control" name="term">
                                 <?php
-                                    foreach ($query as $ruangan) {
-                                        echo "<option value='".$ruangan['no_ruangan']."'>".ucwords($ruangan['nama_ruangan'])."</option>";
+                                    $sql = "SELECT * FROM siangbang.term";
+                                    $stmt = $db->prepare($sql);
+                                    $stmt->execute();
+                                    $terms = array();
+
+                                    while ($row = $stmt->fetch()) {
+                                        array_push($terms, $row);
+                                    }
+                                    
+                                    foreach ($terms as $term) {
+                                        echo "<option value='".$term['tahun']."-".$term['semester']."'>".$term['tahun']."/".$term['semester']."</option>";
                                     }
                                 ?>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Tanggal Mulai</label>
-                            <div class="input-group date">
-                                <div class="input-group-addon">
-                                    <i class="fa fa-calendar"></i>
-                                </div>
-                                <input name="tgl_mulai" type="text" class="form-control pull-right datepicker">
-                            </div>
+                            <label for="nama_matkul">Nama Matkul</label>
+                            <input name="nama_matkul" type="text" class="form-control" id="nama_matkul" placeholder="Masukkan Nama Matkul">
                         </div>
                         <div class="form-group">
-                            <label>Tanggal Selesai</label>
-                            <div class="input-group date">
-                                <div class="input-group-addon">
-                                    <i class="fa fa-calendar"></i>
-                                </div>
-                                <input name="tgl_selesai" type="text" class="form-control pull-right datepicker">
-                            </div>
+                            <label for="kelas">Kelas</label>
+                            <input name="kelas" type="text" class="form-control" id="kelas" placeholder="Masukkan Kelas">
                         </div>
                         <div class="bootstrap-timepicker">
                             <div class="bootstrap-timepicker-widget dropdown-menu">
@@ -168,16 +171,26 @@
                             <!-- /.form group -->
                         </div>
                         <div class="form-group">
-                            <label for="tujuan">Nama Kegiatan</label>
-                            <input name="nama_kegiatan" type="text" class="form-control" id="tujuan" placeholder="Masukkan Nama Kegiatan">
+                            <label>Hari</label>
+                            <select class="form-control" name="hari">
+                                <option value="mon">Senin</option>
+                                <option value="tue">Selasa</option>
+                                <option value="wed">Rabu</option>
+                                <option value="thu">Kamis</option>
+                                <option value="fri">Jumat</option>
+                                <option value="sat">Sabtu</option>
+                                <option value="sun">Minggu</option>
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label for="tujuan">Tujuan</label>
-                            <input name="tujuan" type="text" class="form-control" id="tujuan" placeholder="Masukkan Tujuan">
-                        </div>
-                        <div class="form-group">
-                            <label for="jumlah">Jumlah Peserta</label>
-                            <input name="jumlah" type="number" class="form-control" id="jumlah" placeholder="Masukkan Jumlah">
+                            <label>Kode Ruangan</label>
+                            <select class="form-control" name="kode_ruangan">
+                                <?php
+                                    foreach ($query as $ruangan) {
+                                        echo "<option value='".explode(" ", $ruangan['no_ruangan'])[0]."'>".explode(" ", $ruangan['no_ruangan'])[0]."</option>";
+                                    }
+                                ?>
+                            </select>
                         </div>
                     </div>
                     <div class="box-footer">

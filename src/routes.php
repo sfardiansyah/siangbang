@@ -247,6 +247,10 @@ $app->get('/dashboard/{function}', function (Request $request, Response $respons
                     ORDER BY tgl_mulai DESC;";
                 break;
             
+            case 'entry-jadwal':
+                $sql = "SELECT * FROM siangbang.ruangan;";
+                break;
+            
             default:
                 # code...
                 break;
@@ -310,6 +314,29 @@ $app->post('/login', function (Request $request, Response $response, array $args
             return $this->renderer->render($response, 'landing.phtml', $args);
         }
     } 
+});
+
+$app->post('/insert-schedule', function (Request $request, Response $response, array $args) {
+    if (isset($_POST['simpan'])) {
+        
+        $sql = "SELECT username_admin
+            FROM siangbang.ruangan
+            WHERE no_ruangan = '{$_POST['kode_ruangan']}';";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $item = $stmt->fetch();
+
+        $today = date("Y-m-d");
+        $term = explode("-", $_POST['term']);
+
+        $sql = "INSERT INTO siangbang.jadwal (kode_jadwal, tahun_term, semester_term, nama_matkul, kelas, jam_mulai, jam_selesai, hari, kode_ruangan, username_admin)
+            VALUES ('{$_POST['kode_jadwal']}', '{$term['0']}', '{$term['1']}', '{$_POST['nama_matkul']}', '{$_POST['kelas']}', TIMESTAMP '{$today} {$_POST['waktu_mulai']}', TIMESTAMP '{$today} {$_POST['waktu_selesai']}', '{$_POST['hari']}', '{$_POST['kode_ruangan']}', '{$item['username_admin']}');";
+        $stmt = $this->db->prepare($sql);
+        $result = $stmt->execute();
+
+        return $response->withRedirect('/dashboard/entry-jadwal');
+    }
 });
 
 $app->post('/insert-room', function (Request $request, Response $response, array $args) {
@@ -564,6 +591,13 @@ $app->post('/print-ruang', function (Request $request, Response $response, array
     $name = "BUKTI_".str_replace("-", "", $item['tgl_mulai'])."-".$item['username_mhs'].".pdf";
 
     $this->pdf->Output('D', $name);
+});
+
+$app->get('/jadwal-ruangan', function (Request $request, Response $response, array $args) {
+    // Sample log message
+    $this->logger->info("Slim-Skeleton '/' route");
+    
+    return $this->renderer->render($response, 'd_jadwal_ruangan.php', $args);
 });
 
 $app->get('/', function (Request $request, Response $response, array $args) {
