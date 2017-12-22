@@ -18,6 +18,11 @@ $app->get('/dashboard', function (Request $request, Response $response, array $a
     }
 });
 
+$app->post('/change-room', function (Request $request, Response $response, array $args) {
+    $_SESSION['ruangan'] = $_POST['ruangan'];
+    return $response->withRedirect('/dashboard/jadwal-ruang');
+});
+
 $app->post('/change-date', function (Request $request, Response $response, array $args) {
     // Determine the query based on page
     switch ($_POST['page']) {
@@ -249,6 +254,10 @@ $app->get('/dashboard/{function}', function (Request $request, Response $respons
             
             case 'entry-jadwal':
                 $sql = "SELECT * FROM siangbang.ruangan;";
+                break;
+            
+            case 'jadwal-ruang':
+                $sql = "SELECT 1";
                 break;
             
             default:

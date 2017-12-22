@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>AdminLTE 2 | Dashboard</title>
+    <title>Siangbang | Dashboard</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.7 -->
@@ -22,6 +22,9 @@
     <link rel="stylesheet" href="/css/bootstrap-datepicker.min.css">
     <!-- Time Picker -->
     <link rel="stylesheet" href="/css/bootstrap-timepicker.min.css">
+    <!-- Full Calendar -->
+    <link rel="stylesheet" href="/css/fullcalendar.min.css">
+    <link rel="stylesheet" href="/css/fullcalendar.print.min.css" media="print">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -104,7 +107,7 @@
                         </a>
                     </li>
                     <?php if ($_SESSION['role'] == 'admin_ruangan' || $_SESSION['role'] == 'mahasiswa') : ?>
-                    <li class="treeview <?php if ($function == 'daftar-ruang' || $function == 'list-pinjam-ruang' || $function == 'entry-jadwal') echo "active";?>">
+                    <li class="treeview <?php if ($function == 'daftar-ruang' || $function == 'list-pinjam-ruang' || $function == 'entry-jadwal') echo " active ";?>">
                         <a href="#">
                             <i class="fa fa-building"></i>
                             <span>Ruangan</span>
@@ -113,25 +116,25 @@
                             </span>
                         </a>
                         <ul class="treeview-menu">
-                            <li <?php if ($function == 'daftar-ruang') echo "class='active'";?>>
+                            <li <?php if ($function=='daftar-ruang' ) echo "class='active'";?>>
                                 <a href="<?php if (empty($function)) echo "dashboard/" ?>daftar-ruang"><i class="fa fa-circle-o"></i> Ruangan Tersedia</a>
                             </li>
                             <?php if ($_SESSION['role'] == 'admin_ruangan') : ?>
-                            <li <?php if ($function == 'list-pinjam-ruang') echo "class='active'";?>>
+                            <li <?php if ($function=='list-pinjam-ruang' ) echo "class='active'";?>>
                                 <a href="<?php if (empty($function)) echo "dashboard/" ?>list-pinjam-ruang"><i class="fa fa-circle-o"></i> Daftar Peminjaman Ruangan</a>
                             </li>
-                            <li <?php if ($function == 'entry-jadwal') echo "class='active'";?>>
+                            <li <?php if ($function=='entry-jadwal' ) echo "class='active'";?>>
                                 <a href="<?php if (empty($function)) echo "dashboard/" ?>entry-jadwal"><i class="fa fa-circle-o"></i> Entry Jadwal Ruangan</a>
                             </li>
                             <?php endif; ?>
                             <li>
-                                <a href="/jadwal-ruangan"><i class="fa fa-circle-o"></i> Lihat Jadwal</a>
+                                <a href="<?php if (empty($function)) echo "dashboard/" ?>jadwal-ruang"><i class="fa fa-circle-o"></i> Lihat Jadwal</a>
                             </li>
                         </ul>
                     </li>
                     <?php endif; ?>
                     <?php if ($_SESSION['role'] == 'admin_barang' || $_SESSION['role'] == 'mahasiswa') : ?>
-                    <li class="treeview <?php if ($function == 'daftar-barang') echo "active";?>">
+                    <li class="treeview <?php if ($function == 'daftar-barang') echo " active ";?>">
                         <a href="#">
                             <i class="fa fa-laptop"></i>
                             <span>Barang</span>
@@ -140,14 +143,14 @@
                             </span>
                         </a>
                         <ul class="treeview-menu">
-                            <li <?php if ($function == 'daftar-barang') echo "class='active'";?>>
+                            <li <?php if ($function=='daftar-barang' ) echo "class='active'";?>>
                                 <a href="<?php if (empty($function)) echo "dashboard/" ?>daftar-barang"><i class="fa fa-circle-o"></i> Barang Tersedia</a>
                             </li>
                         </ul>
                     </li>
                     <?php endif; ?>
                     <?php if ($_SESSION['role'] == 'mahasiswa') : ?>
-                    <li class="treeview <?php if ($function == 'pinjam-barang' || $function == 'pinjam-ruang') echo "active";?>">
+                    <li class="treeview <?php if ($function == 'pinjam-barang' || $function == 'pinjam-ruang') echo " active ";?>">
                         <a href="#">
                             <i class="fa fa-plus-square"></i>
                             <span>Peminjaman</span>
@@ -156,17 +159,17 @@
                             </span>
                         </a>
                         <ul class="treeview-menu">
-                            <li <?php if ($function == 'pinjam-barang') echo "class='active'";?>>
+                            <li <?php if ($function=='pinjam-barang' ) echo "class='active'";?>>
                                 <a href="<?php if (empty($function)) echo "dashboard/" ?>pinjam-barang"><i class="fa fa-circle-o"></i> Pinjam Barang</a>
                             </li>
-                            <li <?php if ($function == 'pinjam-ruang') echo "class='active'";?>>
+                            <li <?php if ($function=='pinjam-ruang' ) echo "class='active'";?>>
                                 <a href="<?php if (empty($function)) echo "dashboard/" ?>pinjam-ruang"><i class="fa fa-circle-o"></i> Pinjam Ruangan</a>
                             </li>
                         </ul>
                     </li>
                     <?php endif; ?>
                     <?php if ($_SESSION['role'] == 'mahasiswa') : ?>
-                    <li class="treeview <?php if ($function == 'riwayat-barang' || $function == 'riwayat-ruang') echo "active";?>">
+                    <li class="treeview <?php if ($function == 'riwayat-barang' || $function == 'riwayat-ruang') echo " active ";?>">
                         <a href="#">
                             <i class="fa fa-history"></i>
                             <span>Riwayat</span>
@@ -175,17 +178,17 @@
                             </span>
                         </a>
                         <ul class="treeview-menu">
-                            <li <?php if ($function == 'riwayat-barang') echo "class='active'";?>>
+                            <li <?php if ($function=='riwayat-barang' ) echo "class='active'";?>>
                                 <a href="<?php if (empty($function)) echo "dashboard/" ?>riwayat-barang"><i class="fa fa-circle-o"></i> Riwayat Peminjaman Barang</a>
                             </li>
-                            <li <?php if ($function == 'riwayat-ruang') echo "class='active'";?>>
+                            <li <?php if ($function=='riwayat-ruang' ) echo "class='active'";?>>
                                 <a href="<?php if (empty($function)) echo "dashboard/" ?>riwayat-ruang"><i class="fa fa-circle-o"></i> Riwayat Peminjaman Ruangan</a>
                             </li>
                         </ul>
                     </li>
                     <?php endif; ?>
                     <?php if ($_SESSION['role'] == 'mahasiswa') : ?>
-                    <li class="treeview <?php if ($function == 'cetak-barang' || $function == 'cetak-ruang') echo "active";?>">
+                    <li class="treeview <?php if ($function == 'cetak-barang' || $function == 'cetak-ruang') echo " active ";?>">
                         <a href="#">
                             <i class="fa fa-print"></i>
                             <span>Cetak Bukti</span>
@@ -194,10 +197,10 @@
                             </span>
                         </a>
                         <ul class="treeview-menu">
-                            <li <?php if ($function == 'cetak-barang') echo "class='active'";?>>
+                            <li <?php if ($function=='cetak-barang' ) echo "class='active'";?>>
                                 <a href="<?php if (empty($function)) echo "dashboard/" ?>cetak-barang"><i class="fa fa-circle-o"></i> Bukti Peminjaman Barang</a>
                             </li>
-                            <li <?php if ($function == 'cetak-ruang') echo "class='active'";?>>
+                            <li <?php if ($function=='cetak-ruang' ) echo "class='active'";?>>
                                 <a href="<?php if (empty($function)) echo "dashboard/" ?>cetak-ruang"><i class="fa fa-circle-o"></i> Bukti Peminjaman Ruangan</a>
                             </li>
                         </ul>
@@ -259,6 +262,10 @@
                     case 'entry-jadwal':
                         require_once(__DIR__.'/layouts/entry-jadwal.php');
                         break;
+
+                    case 'jadwal-ruang':
+                        require_once(__DIR__.'/layouts/jadwal-ruang.php');
+                        break;
                   
                     default:
                         require_once(__DIR__.'/layouts/default.php');
@@ -290,11 +297,92 @@
     <script src="/js/bootstrap.min.js"></script>
     <!-- datepicker -->
     <script src="/js/bootstrap-datepicker.min.js"></script>
+    <!-- fullcalendar -->
+    <script src="/js/moment.js"></script>
+    <script src="/js/fullcalendar.min.js"></script>
     <!-- timepicker -->
     <script src="/js/bootstrap-timepicker.min.js"></script>
     <!-- AdminLTE App -->
     <script src="/js/adminlte.min.js"></script>
+    <script type="text/javascript" id="arrays">
+        var jadwals = [
+            <?php 
+                if (empty($_SESSION['ruangan'])) {
+                    $sql = "SELECT * FROM siangbang.jadwal WHERE kode_ruangan = '1';";
+                } else {
+                    $sql = "SELECT * FROM siangbang.jadwal WHERE kode_ruangan = '{$_SESSION['ruangan']}';";
+                }
+                $stmt = $db->prepare($sql);
+                $stmt->execute();
+                $jadwal = array();
+
+                while ($row = $stmt->fetch()) {
+                    array_push($jadwal, $row);
+                }
+
+                $out = "";
+                foreach ($jadwal as $key => $value) {
+
+                    switch ($value['hari']) {
+                        case 'mon':
+                            $day = 1;
+                            break;
+
+                        case 'tue':
+                            $day = 2;
+                            break;
+
+                        case 'wed':
+                            $day = 3;
+                            break;
+
+                        case 'thu':
+                            $day = 4;
+                            break;
+
+                        case 'fri':
+                            $day = 5;
+                            break;
+
+                        case 'sat':
+                            $day = 0;
+                            break;
+                    }
+                    
+                    $out .= "{
+                        title: '".ucwords($value['nama_matkul'])."',
+                        start: '".substr(explode(" ", $value['jam_mulai'])[1], 0, 5)."',
+                        end: '".substr(explode(" ", $value['jam_selesai'])[1], 0, 5)."',
+                        dow: [".$day."]
+                        },\n";
+                }
+
+                echo substr($out, 0, -1);
+            ?>
+        ];
+    </script>
     <script type="text/javascript">
+    $(document).ready(function() {
+
+        /* initialize the calendar
+     -----------------------------------------------------------------*/
+        
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            buttonText: {
+                today: 'today',
+                month: 'month',
+                week: 'week',
+                day: 'day'
+            },
+            //Random default events
+            events: jadwals
+        });
+
         $('.datepicker').datepicker({
             orientation: 'bottom',
             format: 'yyyy-mm-dd'
@@ -305,49 +393,59 @@
             showInputs: false
         })
 
-        $(".date-selector").change(function(){
+        $(".date-selector").change(function() {
             var monthVal = $("#month-select").val();
             if (monthVal < 10) {
-                monthVal = 0+monthVal;
+                monthVal = 0 + monthVal;
             }
             var yearVal = $("#year-select").val();
-            
-            $.post('/change-date', { month: monthVal, year: yearVal, page: "<?php echo $function ?>" }, 
-                function(returnedData){
+
+            $.post('/change-date', { month: monthVal, year: yearVal, page: "<?php echo $function ?>" },
+                function(returnedData) {
                     console.log(returnedData);
                     $('#table-result').html(returnedData);
-            });
+                });
         });
 
         $.ajaxSetup({
-          cache: false
+            cache: false
         });
 
-        $(".accept-button").click(function () {
+        $(".accept-button").click(function() {
             var username_mhs = $(this).attr('username');
             var tgl = $(this).attr('tgl_mulai');
             var no_ruangan = $(this).attr('ruangan');
 
-            $.post('/accept-ruang', { username: username_mhs, tgl_mulai: tgl, ruangan: no_ruangan }, 
-                function(returnedData){
+            $.post('/accept-ruang', { username: username_mhs, tgl_mulai: tgl, ruangan: no_ruangan },
+                function(returnedData) {
                     location.reload();
-            });
+                });
         });
 
-        $(".deny-button").click(function () {
+        $(".deny-button").click(function() {
             var username_mhs = $(this).attr('username');
             var tgl = $(this).attr('tgl_mulai');
             var no_ruangan = $(this).attr('ruangan');
-            
-            $.post('/deny-ruang', { username: username_mhs, tgl_mulai: tgl, ruangan: no_ruangan }, 
-                function(returnedData){
+
+            $.post('/deny-ruang', { username: username_mhs, tgl_mulai: tgl, ruangan: no_ruangan },
+                function(returnedData) {
                     location.reload();
-            });
+                });
         });
 
-        $(".print-item-button").click(function () {
+        $(".print-item-button").click(function() {
             location.reload();
         });
+
+        $("#room-select").change(function() {
+            var roomVal = $(this).val();
+
+            $.post('/change-room', { ruangan: roomVal }, 
+                function(returnedData) {
+                    // location.reload();
+                });
+        });
+    });
     </script>
 </body>
 
